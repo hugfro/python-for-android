@@ -1,0 +1,11 @@
+diff '--color=auto' -uNr coincurve-18.0.0/setup.py coincurve-18.0.0.patched/setup.py
+--- coincurve-18.0.0/setup.py	2022-11-20 01:40:25.000000000 +0530
++++ coincurve-18.0.0.patched/setup.py	2023-06-06 14:54:40.889434562 +0530
+@@ -176,6 +176,7 @@
+             absolute('libsecp256k1/configure'),
+             '--disable-shared',
+             '--enable-static',
++            '--host=%s' % os.environ['TOOLCHAIN_PREFIX'],
+             '--disable-dependency-tracking',
+             '--with-pic',
+             '--enable-module-extrakeys',

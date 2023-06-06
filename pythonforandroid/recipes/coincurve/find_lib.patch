@@ -1,0 +1,9 @@
+--- coincurve-18.0.0/setup_support.py	2022-11-20 01:40:25.000000000 +0530
++++ coincurve-18.0.0.patched/setup_support.py	2023-06-06 14:58:52.960948988 +0530
+@@ -60,6 +60,7 @@
+ 
+ 
+ def _find_lib():
++    return True
+     if 'COINCURVE_IGNORE_SYSTEM_LIB' in os.environ:
+         return False 
