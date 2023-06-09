@@ -2,7 +2,9 @@ package org.kivy.android;
 
 import java.io.InputStream;
 import java.io.FileWriter;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -19,6 +21,8 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.AsyncTask;
@@ -39,6 +43,9 @@ import org.kivy.android.launcher.Project;
 
 import org.renpy.android.ResourceManager;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class PythonActivity extends SDLActivity {
     private static final String TAG = "PythonActivity";
@@ -405,7 +412,12 @@ public class PythonActivity extends SDLActivity {
         });
     }
 
+
     public void removeLoadingScreen() {
+        System.out.println("removeCalled");
+    }
+
+    public void removeLoadingScreenMain() {
         runOnUiThread(new Runnable() {
             public void run() {
                 View view = mLottieView != null ? mLottieView : mImageView;
@@ -448,7 +460,7 @@ public class PythonActivity extends SDLActivity {
         }
     }
 
-    protected void setBackgroundColor(View view) {
+    protected void setBackgroundColor(View view, String color) {
         /*
          * Set the presplash loading screen background color
          * https://developer.android.com/reference/android/graphics/Color.html
@@ -459,12 +471,37 @@ public class PythonActivity extends SDLActivity {
          * 'lightgray', 'darkgray', 'grey', 'lightgrey', 'darkgrey', 'aqua', 'fuchsia',
          * 'lime', 'maroon', 'navy', 'olive', 'purple', 'silver', 'teal'.
          */
-        String backgroundColor = resourceManager.getString("presplash_color");
+        String backgroundColor = color; 
         if (backgroundColor != null) {
             try {
                 view.setBackgroundColor(Color.parseColor(backgroundColor));
             } catch (IllegalArgumentException e) {}
         }
+    }
+
+
+    public static String readFileToString(String fileName) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
+            String line;
+
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line).append("\n");
+            }
+
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return stringBuilder.toString();
+    }
+
+    public static boolean isFileExists(String filePath) {
+        File file = new File(filePath);
+        return file.exists();
     }
 
     protected View getLoadingScreen() {
@@ -495,14 +532,14 @@ public class PythonActivity extends SDLActivity {
                 // (Gives error "The specified child already has a parent.
                 // You must call removeView() on the child's parent first.")
             }
-            setBackgroundColor(mLottieView);
+            setBackgroundColor(mLottieView, "#FFFFFF");
             return mLottieView;
         }
         catch (NotFoundException e) {
             Log.v("SDL", "couldn't find lottie layout or animation, trying static splash");
         }
 
-        // no lottie asset, try to load the static image then
+        // default (sets the bitmap)
         int presplashId = this.resourceManager.getIdentifier("presplash", "drawable");
         InputStream is = this.getResources().openRawResource(presplashId);
         Bitmap bitmap = null;
@@ -514,9 +551,40 @@ public class PythonActivity extends SDLActivity {
             } catch (IOException e) {};
         }
 
+        String app_root = getFilesDir().getAbsolutePath();
+        String filePath = app_root + "/app/settings.json"; 
+        String color = resourceManager.getString("presplash_color");
+        
+        if (isFileExists(filePath)) {
+
+            try {
+                JSONObject jsonObject = new JSONObject(readFileToString(filePath));
+
+                if (jsonObject.has("dark_mode")) {
+                    boolean darkMode = jsonObject.getBoolean("dark_mode");
+                    if (darkMode) {
+                        bitmap = BitmapFactory.decodeFile(app_root + "/app/splash_dark.png");
+                        color = "#212121";
+                    } else {
+                        bitmap = BitmapFactory.decodeFile(app_root + "/app/splash_light.png");
+                        color = "#FAFAFA";
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            System.out.println("[python]: Inital run??");
+        }
+
+        window = mActivity.getWindow();
+        window.setNavigationBarColor(Color.parseColor(color));
+        window.setStatusBarColor(Color.parseColor(color));
+
         mImageView = new ImageView(this);
         mImageView.setImageBitmap(bitmap);
-        setBackgroundColor(mImageView);
+        setBackgroundColor(mImageView, color);
 
         mImageView.setLayoutParams(new ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.FILL_PARENT,
