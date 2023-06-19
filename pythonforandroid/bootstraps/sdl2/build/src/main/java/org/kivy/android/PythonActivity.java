@@ -578,9 +578,8 @@ public class PythonActivity extends SDLActivity {
             System.out.println("[python]: Inital run??");
         }
 
-        window = mActivity.getWindow();
-        window.setNavigationBarColor(Color.parseColor(color));
-        window.setStatusBarColor(Color.parseColor(color));
+        mActivity.getWindow().setNavigationBarColor(Color.parseColor(color));
+        mActivity.getWindow().setStatusBarColor(Color.parseColor(color));
 
         mImageView = new ImageView(this);
         mImageView.setImageBitmap(bitmap);
