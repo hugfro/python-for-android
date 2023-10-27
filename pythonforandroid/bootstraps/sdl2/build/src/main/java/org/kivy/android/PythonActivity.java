@@ -32,6 +32,7 @@ import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -606,6 +607,12 @@ public class PythonActivity extends SDLActivity {
             // call native function (since it's not yet loaded)
         }
     }
+
+    @Override
+    public void onBackPressed() {
+
+        super.onBackPressed();
+      }
 
     @Override
     protected void onResume() {
