@@ -4,7 +4,7 @@ from pythonforandroid.logger import info
 
 class PydanticcoreRecipe(RustCompiledComponentsRecipe):
     version = "2.16.1"
-    url = "https://github.com/pydantic/pydantic-core/archive/refs/tags/v{version}.tar.gz"
+    url = "https://files.pythonhosted.org/packages/d1/43/430e8a0be9dfec1ff9fb7f2289da9bd684fdb8d15796888a53b540c5e3d6/pydantic_core-2.16.3-pp310-pypy310_pp73-musllinux_1_1_aarch64.whl"
     use_maturin = True
     hostpython_prerequisites = ["typing_extensions"]
     info("fungera tack")
