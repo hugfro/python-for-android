@@ -12,7 +12,7 @@ class PydanticcoreRecipe(RustCompiledComponentsRecipe):
         name = self.folder_name
         if self.ctx.has_package(name.replace("-", "_"), arch):
             info('Python package already exists in site-packages')
-            return False
+            return True
         info('{} apparently isn\'t already in site-packages'.format(name))
         return True
 
