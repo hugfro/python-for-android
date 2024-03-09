@@ -1205,9 +1205,11 @@ class RustCompiledComponentsRecipe(PythonRecipe):
 
         # Set rust build target
         build_target = self.RUST_ARCH_CODES[arch.arch]
+        print(build_target)
         cargo_linker_name = "CARGO_TARGET_{}_LINKER".format(
             build_target.upper().replace("-", "_")
         )
+        print(cargo_linker_name)
         env["CARGO_BUILD_TARGET"] = build_target
         env[cargo_linker_name] = join(
             self.ctx.ndk.llvm_prebuilt_dir,
@@ -1220,8 +1222,9 @@ class RustCompiledComponentsRecipe(PythonRecipe):
                 self.ctx.ndk_api,
             ),
         )
+        print(env[cargo_linker_name])
         realpython_dir = Recipe.get_recipe("python3", self.ctx).get_build_dir(arch.arch)
-
+        print(realpython_dirs)
         env["RUSTFLAGS"] = "-Clink-args=-L{} -L{}".format(
             self.ctx.get_libs_dir(arch.arch), join(realpython_dir, "android-build")
         )
@@ -1241,6 +1244,8 @@ class RustCompiledComponentsRecipe(PythonRecipe):
             ).get_path_to_python(),
             old_path=env["PATH"],
         )
+        print(env)
+        exit(1)
         return env
 
     def get_python_formatted_version(self):
