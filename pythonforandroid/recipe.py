@@ -1182,7 +1182,7 @@ class RustCompiledComponentsRecipe(PythonRecipe):
         super().__init__(*arg, **kwargs)
         self.append_deps_if_absent(["python3"])
         self.set_default_hostpython_deps()
-        print("hej hej")
+        info("hej hej")
         if not self.built_wheel_pattern:
             self.built_wheel_pattern = (
                 "target/wheels/*-linux_*.whl"
@@ -1191,29 +1191,29 @@ class RustCompiledComponentsRecipe(PythonRecipe):
             )
 
     def set_default_hostpython_deps(self):
-        print("hej hej")
+        info("hej hej")
         if not self.use_maturin:
             self.hostpython_prerequisites += ["build", "setuptools_rust", "wheel", "pyproject_hooks"]
         else:
             self.hostpython_prerequisites += ["maturin"]
 
     def append_deps_if_absent(self, deps):
-        print("hej hej")
+        info("hej hej")
         for dep in deps:
             if dep not in self.depends:
                 self.depends.append(dep)
 
     def get_recipe_env(self, arch):
-        print("hej hej")
+        info("hej hej")
         env = super().get_recipe_env(arch)
 
         # Set rust build target
         build_target = self.RUST_ARCH_CODES[arch.arch]
-        print(build_target)
+        info(build_target)
         cargo_linker_name = "CARGO_TARGET_{}_LINKER".format(
             build_target.upper().replace("-", "_")
         )
-        print(cargo_linker_name)
+        info(cargo_linker_name)
         env["CARGO_BUILD_TARGET"] = build_target
         env[cargo_linker_name] = join(
             self.ctx.ndk.llvm_prebuilt_dir,
@@ -1226,9 +1226,9 @@ class RustCompiledComponentsRecipe(PythonRecipe):
                 self.ctx.ndk_api,
             ),
         )
-        print(env[cargo_linker_name])
+        info(env[cargo_linker_name])
         realpython_dir = Recipe.get_recipe("python3", self.ctx).get_build_dir(arch.arch)
-        print(realpython_dir)
+        info(realpython_dir)
         env["RUSTFLAGS"] = "-Clink-args=-L{} -L{}".format(
             self.ctx.get_libs_dir(arch.arch), join(realpython_dir, "android-build")
         )
@@ -1248,17 +1248,17 @@ class RustCompiledComponentsRecipe(PythonRecipe):
             ).get_path_to_python(),
             old_path=env["PATH"],
         )
-        print(env)
+        info(env)
         exit(1)
         return env
 
     def get_python_formatted_version(self):
-        print("hej hej")
+        info("hej hej")
         parsed_version = packaging.version.parse(self.python_version)
         return f"{parsed_version.major}.{parsed_version.minor}"
 
     def check_host_deps(self):
-        print("hej hej")
+        info("hej hej")
         if not hasattr(sh, "rustup"):
             error(
                 "`rustup` was not found on host system."
@@ -1268,7 +1268,7 @@ class RustCompiledComponentsRecipe(PythonRecipe):
             exit(1)
 
     def build_arch(self, arch):
-        print("hej hej")
+        info("hej hej")
         self.check_host_deps()
         self.install_hostpython_prerequisites()
         build_dir = self.get_build_dir(arch.arch)

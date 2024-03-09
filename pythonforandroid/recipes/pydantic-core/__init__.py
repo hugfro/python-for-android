@@ -7,6 +7,7 @@ class PydanticcoreRecipe(RustCompiledComponentsRecipe):
     url = "https://github.com/pydantic/pydantic-core/archive/refs/tags/v{version}.tar.gz"
     use_maturin = True
     hostpython_prerequisites = ["typing_extensions"]
+    info("fungera tack")
 
     def should_build(self, arch):
         name = self.folder_name
